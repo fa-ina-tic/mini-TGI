@@ -32,12 +32,12 @@ class Generator:
         self.accelerator = Accelerator()
         self.distributed_state = PartialState()
 
-        print(f"Accelerator initialized:")
-        print(f"  - Device: {self.accelerator.device}")
-        print(f"  - Num processes: {self.accelerator.num_processes}")
-        print(f"  - Process index: {self.accelerator.process_index}")
-        print(f"  - Is main process: {self.accelerator.is_main_process}")
-        print(f"  - Distributed type: {self.accelerator.distributed_type}")
+        logging.info(f"Accelerator initialized:")
+        logging.info(f"  - Device: {self.accelerator.device}")
+        logging.info(f"  - Num processes: {self.accelerator.num_processes}")
+        logging.info(f"  - Process index: {self.accelerator.process_index}")
+        logging.info(f"  - Is main process: {self.accelerator.is_main_process}")
+        logging.info(f"  - Distributed type: {self.accelerator.distributed_type}")
 
         # Set seed
         if default_seed is not None:
