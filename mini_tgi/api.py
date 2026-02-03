@@ -393,17 +393,38 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def serve(
+    model_id: str = "meta-llama/Llama-3.2-1B-Instruct",
+    host: str = "0.0.0.0",
+    port: int = 8000,
+    dtype: str | None = None,
+    trust_remote_code: bool = False,
+    attn_implementation: str | None = None,
+    seed: int | None = None,
+):
+    """Start the Mini-TGI server with the specified configuration."""
     import uvicorn
 
+    app = create_app(
+        model_id=model_id,
+        dtype=dtype,
+        trust_remote_code=trust_remote_code,
+        attn_implementation=attn_implementation,
+        default_seed=seed,
+    )
+
+    uvicorn.run(app, host=host, port=port)
+
+
+if __name__ == "__main__":
     args = parse_args()
 
-    app = create_app(
+    serve(
         model_id=args.model_id,
+        host=args.host,
+        port=args.port,
         dtype=args.dtype,
         trust_remote_code=args.trust_remote_code,
         attn_implementation=args.attn_implementation,
-        default_seed=args.seed,
+        seed=args.seed,
     )
-
-    uvicorn.run(app, host=args.host, port=args.port)

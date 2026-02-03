@@ -489,6 +489,7 @@ dependencies = [
     { name = "torch" },
     { name = "transformers", extra = ["serving"] },
     { name = "ty" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -499,6 +500,7 @@ requires-dist = [
     { name = "torch", specifier = ">=2.10.0" },
     { name = "transformers", extras = ["serving"], specifier = ">=5.0.0" },
     { name = "ty", specifier = ">=0.0.14" },
+    { name = "uvicorn", specifier = ">=0.30.0" },
 ]
 
 [[package]]
