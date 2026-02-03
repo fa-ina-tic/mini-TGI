@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mini-tgi"
+version = "0.1.0"
+description = "A lightweight inference server with OpenAI API compatibility"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Mini-TGI Contributors"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "accelerate>=1.12.0",
+    "fastapi>=0.128.0",
+    "openai>=2.16.0",
+    "torch>=2.10.0",
+    "transformers[serving]>=5.0.0",
+    "ty>=0.0.14",
+]
+
+
+[project.scripts]
+mini-tgi = "mini_tgi.main:cli"
+
+[[tool.uv.index]]
+url = "http://10.10.12.57:9000/repository/pypi-repos/simple"
+default = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mini_tgi*"]
