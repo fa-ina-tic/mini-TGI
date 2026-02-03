@@ -1,18 +1,79 @@
 # mini-TGI
-super lightweight inference server based on transformers
 
-목표는 ... 최대한 많은 모델을 support 할 수 있는(transformers로 load하는 모든 모델을 목표로) 굉장히 가벼운 inference engine을 만드는 것.
-그럼으로 (1) 특정 하드웨어에 종속된 최적화 방식(e.g, flash-attn2) 이나, 특정 모델 architecture 에 호환되는 최적화는 최대한 지양하겠습니다.
+A lightweight inference server with OpenAI API compatibility, built on top of Hugging Face Transformers.
 
-## Why we need it?
-transformers 에 구현되어 있는 inference cli는 multi-gpu/multi-node를 지원 안함.
-그리고 여러 양자화를 지원하냐...? 도 아님.
-이거는 general 한 implementation으로 보기 어려움.
+## Overview
 
-우리는 이 inference model로 하여금 최신 inference engine(e.g, vLLM, SGLang, TRT-LLM)에서 지원되지 않는 모델도 Serving 할 수 있는, PoC / benchmark에 적합한 inference engine 이 필요함.
+mini-TGI aims to provide a simple, portable inference engine that supports the broadest range of models possible—targeting any model loadable via the Transformers library.
 
-현재 목표로 하는 최적화 내용은 아래와 같음.
-- [ ] barebone with continuous batching & openai api compatible server
-- [ ] multi-GPU / multi-Node inference using Accelerator
-- [ ] Supports multiple quantization(e.g, GPTQ, AWQ)
-- [ ] Supports multi modality
+### Key Features
+
+- **OpenAI API Compatible**: Drop-in replacement for OpenAI API endpoints (`/v1/chat/completions`, `/v1/completions`, `/v1/models`)
+- **Continuous Batching**: Efficient request handling with automatic batching
+- **Streaming Support**: Real-time token streaming via Server-Sent Events (SSE)
+- **Multi-GPU Support**: Distributed inference via Hugging Face Accelerate
+- **Broad Model Support**: Works with any Transformers-compatible Language model
+
+## Installation
+
+### From source
+
+```bash
+git clone https://github.com/your-org/mini-TGI.git
+cd mini-TGI
+pip install -e .
+```
+
+## Quickstart
+
+### Start the server
+
+```bash
+mini-tgi serve --model-id meta-llama/Llama-3.2-1B-Instruct
+```
+
+The server will start on `http://0.0.0.0:8000` by default.
+
+### Make a request
+
+Using curl:
+
+```bash
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.2-1B-Instruct",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+
+## CLI Options
+
+```
+mini-tgi serve [OPTIONS]
+
+Server options:
+  --host TEXT              Host to bind the server to (default: 0.0.0.0)
+  --port INTEGER           Port to bind the server to (default: 8000)
+
+Generator options:
+  --model-id TEXT          Model ID to load, supports revision syntax:
+                           model_id@revision (default: meta-llama/Llama-3.2-1B-Instruct)
+  --dtype TEXT             Data type for model weights: auto, float16, bfloat16, float32
+  --trust-remote-code      Trust remote code from the model repository
+  --attn-implementation    Attention implementation: eager, sdpa, flash_attention_2
+  --seed INTEGER           Random seed for reproducibility
+```
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/chat/completions` | POST | Chat completion (OpenAI compatible) |
+| `/v1/completions` | POST | Text completion (OpenAI compatible) |
+| `/v1/models` | GET | List available models |
+| `/health` | GET | Health check |
+
+## License
+
+MIT License
