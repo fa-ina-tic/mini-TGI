@@ -28,15 +28,12 @@ dependencies = [
     "torch>=2.10.0",
     "transformers[serving]>=5.0.0",
     "ty>=0.0.14",
+    "uvicorn>=0.30.0",
 ]
 
 
 [project.scripts]
 mini-tgi = "mini_tgi.main:cli"
-
-[[tool.uv.index]]
-url = "http://10.10.12.57:9000/repository/pypi-repos/simple"
-default = true
 
 [tool.setuptools.packages.find]
 where = ["."]
