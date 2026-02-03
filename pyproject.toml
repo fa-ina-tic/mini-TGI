@@ -38,3 +38,8 @@ mini-tgi = "mini_tgi.main:cli"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["mini_tgi*"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.14",
+]

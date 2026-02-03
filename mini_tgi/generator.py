@@ -29,7 +29,7 @@ class Generator:
         self.accelerator = Accelerator()
         self.distributed_state = PartialState()
 
-        logging.info(f"Accelerator initialized:")
+        logging.info("Accelerator initialized:")
         logging.info(f"  - Device: {self.accelerator.device}")
         logging.info(f"  - Num processes: {self.accelerator.num_processes}")
         logging.info(f"  - Process index: {self.accelerator.process_index}")
