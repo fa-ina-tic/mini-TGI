@@ -1,7 +1,6 @@
 import logging
 
 import transformers
-from transformers import BitsAndBytesConfig
 import torch
 
 # Accelerate for multi-GPU/multi-node support
@@ -16,16 +15,14 @@ class Generator:
                  dtype = None,
                  trust_remote_code = False,
                  attn_implementation = None,
-                 quantization = None,
                  default_seed = None):
-        
+
         # Save configuration
         self.model_id = model_id
         self.continuous_batching = continuous_batching
         self.dtype = dtype
         self.trust_remote_code = trust_remote_code
         self.attn_implementation = attn_implementation
-        self.quantization = quantization
         self.default_seed = default_seed
 
         # Initialize Accelerator for multi-GPU/multi-node support
@@ -71,24 +68,6 @@ class Generator:
         """
         return self.accelerator.is_main_process
 
-    def _get_quantization_config(self) -> BitsAndBytesConfig | None:
-        """Returns the quantization config based on CLI arguments."""
-        if self.quantization == "bnb-4bit":
-            config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_use_double_quant=True,
-            )
-        elif self.quantization == "bnb-8bit":
-            config = BitsAndBytesConfig(load_in_8bit=True)
-        else:
-            config = None
-
-        if config is not None:
-            logger.info(f"Quantization applied: {config}")
-
-        return config
-
     def _load_model_and_data_processor(self, model_id_and_revision: str):
         """
         Generic method to load a model and a data processor from a model ID and revision, making use of the serve CLI
@@ -131,7 +110,6 @@ class Generator:
                 raise OSError("Failed to load processor with `AutoProcessor` and `AutoTokenizer`.")
 
         dtype = self.dtype if self.dtype in ["auto", None] else getattr(torch, self.dtype)
-        quantization_config = self._get_quantization_config()
 
         model_kwargs = {
             "revision": revision,
@@ -139,7 +117,6 @@ class Generator:
             "dtype": dtype,
             "device_map": self.device,
             "trust_remote_code": self.trust_remote_code,
-            "quantization_config": quantization_config,
         }
 
         config = AutoConfig.from_pretrained(model_id, **model_kwargs)

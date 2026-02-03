@@ -332,7 +332,78 @@ def get_app():
 app = get_app()
 
 
+def parse_args():
+    """Parse command line arguments for the API server."""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Mini-TGI: OpenAI-compatible API server with continuous batching",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    # API server arguments
+    server_group = parser.add_argument_group("Server options")
+    server_group.add_argument(
+        "--host",
+        type=str,
+        default="0.0.0.0",
+        help="Host to bind the server to",
+    )
+    server_group.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to bind the server to",
+    )
+
+    # Generator arguments
+    gen_group = parser.add_argument_group("Generator options")
+    gen_group.add_argument(
+        "--model-id",
+        type=str,
+        default="meta-llama/Llama-3.2-1B-Instruct",
+        help="Model ID to load (can include revision as model_id@revision)",
+    )
+    gen_group.add_argument(
+        "--dtype",
+        type=str,
+        default=None,
+        choices=["auto", "float16", "bfloat16", "float32"],
+        help="Data type for model weights",
+    )
+    gen_group.add_argument(
+        "--trust-remote-code",
+        action="store_true",
+        help="Trust remote code from the model repository",
+    )
+    gen_group.add_argument(
+        "--attn-implementation",
+        type=str,
+        default=None,
+        choices=["eager", "sdpa", "flash_attention_2"],
+        help="Attention implementation to use",
+    )
+    gen_group.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Random seed for reproducibility",
+    )
+
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    args = parse_args()
+
+    app = create_app(
+        model_id=args.model_id,
+        dtype=args.dtype,
+        trust_remote_code=args.trust_remote_code,
+        attn_implementation=args.attn_implementation,
+        default_seed=args.seed,
+    )
+
+    uvicorn.run(app, host=args.host, port=args.port)
