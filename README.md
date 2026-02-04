@@ -28,9 +28,24 @@ pip install -e .
 
 ### Start the server
 
+Simple way to use:
 ```bash
 mini-tgi serve --model-id meta-llama/Llama-3.2-1B-Instruct
 ```
+
+Or you can use docker:
+```bash
+git clone https://github.com/fa-ina-tic/mini-TGI.git
+cd mini-TGI
+
+docker build -t minitgi .
+
+# Set HF_TOKEN if needed
+docker run \
+  -e HF_TOKEN="" \
+  minitgi:latest mini-tgi serve --model-id meta-llama/Llama-3.2-1B-Instruct
+```
+
 
 The server will start on `http://0.0.0.0:8000` by default.
 
